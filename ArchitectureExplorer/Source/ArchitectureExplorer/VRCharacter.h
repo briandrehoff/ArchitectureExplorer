@@ -28,11 +28,16 @@ public:
 
 private:
 
+	bool DidFindTeleportDestination(FVector &OutLocation);
 	void UpdateDestinationMarker();
+
 	void MoveForward(float throttle);
 	void MoveRight(float throttle);
+
 	void BeginTeleport();
 	void FinishTeleport();
+
+	void StartFade(float FromAlpha, float ToAlpha);
 
 private:
 
@@ -49,5 +54,7 @@ private:
 	float MaxTeleportDistance = 1000;
 	UPROPERTY(EditAnywhere)
 	float TeleportFadeTime = 1;
+	UPROPERTY(EditAnywhere)
+	FVector TeleportProjectionExtent = FVector(100, 100, 100);
 
 };
