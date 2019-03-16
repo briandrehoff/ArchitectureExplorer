@@ -56,6 +56,7 @@ void AVRCharacter::Tick(float DeltaTime)
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 	UpdateDestinationMarker();
+	UpdateBlinkers();
 }
 
 bool AVRCharacter::DidFindTeleportDestination(FVector &OutLocation)
@@ -98,6 +99,16 @@ void AVRCharacter::UpdateDestinationMarker()
 	{
 		DestinationMarker->SetVisibility(false);
 	}
+}
+
+void AVRCharacter::UpdateBlinkers()
+{
+	if (RadiusVsVelocity == nullptr) return;
+
+	float Speed = GetVelocity().Size();
+	float Radius = RadiusVsVelocity->GetFloatValue(Speed);
+
+	BlinkerMaterialInstance->SetScalarParameterValue("Radius", Radius);
 }
 
 // Called to bind functionality to input
