@@ -36,5 +36,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	class UCameraComponent* Camera;
+	class USceneComponent* VRRoot;
 
 };
