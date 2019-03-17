@@ -34,6 +34,7 @@ private:
 	void MoveForward(float throttle);
 	void MoveRight(float throttle);
 	void UpdateBlinkers();
+	FVector2D GetBlinkerCenter();
 
 	void BeginTeleport();
 	void FinishTeleport();
