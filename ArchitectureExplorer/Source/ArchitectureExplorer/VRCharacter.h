@@ -34,6 +34,8 @@ private:
 	void MoveForward(float throttle);
 	void MoveRight(float throttle);
 	void UpdateBlinkers();
+	void DrawTeleportPath(const TArray<FVector> &Pat);
+	void AddMeshToPool();
 	void UpdateSpline(const TArray<FVector> &Path);
 	FVector2D GetBlinkerCenter();
 
@@ -60,6 +62,8 @@ private:
 	class UPostProcessComponent* PostProcessingComponent;
 	UPROPERTY(VisibleAnywhere)
 	class UMaterialInstanceDynamic* BlinkerMaterialInstance;
+	UPROPERTY(VisibleAnywhere)
+	TArray<UStaticMeshComponent*> TeleportPathMeshPool;
 
 private:
 
@@ -77,5 +81,9 @@ private:
 	class UMaterialInterface* BlinkerMaterialBase;
 	UPROPERTY(EditAnywhere)
 	class UCurveFloat* RadiusVsVelocity;
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMesh* TeleportArchMesh;
+	UPROPERTY(EditDefaultsOnly)
+	class UMaterialInterface* TeleportArchMaterial;
 
 };
