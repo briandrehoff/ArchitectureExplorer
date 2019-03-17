@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "MotionControllerComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SplineComponent.h"
 
 // Sets default values
 AVRCharacter::AVRCharacter()
@@ -32,6 +33,9 @@ AVRCharacter::AVRCharacter()
 	RightController = CreateDefaultSubobject<UMotionControllerComponent>("RightController");
 	RightController->SetupAttachment(VRRoot);
 	RightController->SetTrackingSource(EControllerHand::Right);
+
+	TeleportPath = CreateDefaultSubobject<USplineComponent>("TeleportPath");
+	TeleportPath->SetupAttachment(RightController);
 
 	DestinationMarker = CreateDefaultSubobject<UStaticMeshComponent>("DestinationMarker");
 	DestinationMarker->SetupAttachment(GetRootComponent());
@@ -69,7 +73,7 @@ void AVRCharacter::Tick(float DeltaTime)
 	UpdateBlinkers();
 }
 
-bool AVRCharacter::DidFindTeleportDestination(FVector &OutLocation)
+bool AVRCharacter::DidFindTeleportDestination(TArray<FVector> &OutPath, FVector &OutLocation)
 {
 	FVector Start = RightController->GetComponentLocation();
 	FVector Look = RightController->GetForwardVector();
@@ -89,6 +93,11 @@ bool AVRCharacter::DidFindTeleportDestination(FVector &OutLocation)
 	bool DidHit = UGameplayStatics::PredictProjectilePath(GetWorld(), Params, Result);
 
 	if (!DidHit) return false;
+
+	for (FPredictProjectilePathPointData PointData : Result.PathData)
+	{
+		OutPath.Add(PointData.Location);
+	}
 
 	FNavLocation NavigationLocation;
 	UNavigationSystemV1* NavigationSystem = Cast<UNavigationSystemV1>(GetWorld()->GetNavigationSystem());
@@ -110,11 +119,13 @@ bool AVRCharacter::DidFindTeleportDestination(FVector &OutLocation)
 
 void AVRCharacter::UpdateDestinationMarker()
 {
+	TArray<FVector> Path;
 	FVector Destination;
-	if (DidFindTeleportDestination(Destination))
+	if (DidFindTeleportDestination(Path, Destination))
 	{
 		DestinationMarker->SetVisibility(true);
 		DestinationMarker->SetWorldLocation(Destination);
+		UpdateSpline(Path);
 	}
 	else
 	{
@@ -132,6 +143,19 @@ void AVRCharacter::UpdateBlinkers()
 	FVector2D Center = GetBlinkerCenter();
 	BlinkerMaterialInstance->SetScalarParameterValue("Radius", Radius);
 	BlinkerMaterialInstance->SetVectorParameterValue("Center", FLinearColor(Center.X, Center.Y, 0));
+}
+
+void AVRCharacter::UpdateSpline(const TArray<FVector> &Path)
+{
+	TeleportPath->ClearSplinePoints(false);
+	for (int32 i = 0; i < Path.Num(); ++i)
+	{
+		FVector LocalPosition = TeleportPath->GetComponentTransform().InverseTransformPosition(Path[i]);
+		FSplinePoint Point = FSplinePoint(i, LocalPosition, ESplinePointType::Curve);
+		TeleportPath->AddPoint(Point, false);
+	}
+
+	TeleportPath->UpdateSpline();
 }
 
 FVector2D AVRCharacter::GetBlinkerCenter()
