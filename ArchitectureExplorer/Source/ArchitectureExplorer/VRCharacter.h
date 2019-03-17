@@ -63,7 +63,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UMaterialInstanceDynamic* BlinkerMaterialInstance;
 	UPROPERTY(VisibleAnywhere)
-	TArray<UStaticMeshComponent*> TeleportPathMeshPool;
+	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
 private:
 
