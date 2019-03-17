@@ -10,6 +10,7 @@
 #include "NavigationSystem.h"
 #include "Components/PostProcessComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "MotionControllerComponent.h"
 
 // Sets default values
 AVRCharacter::AVRCharacter()
@@ -22,6 +23,14 @@ AVRCharacter::AVRCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(VRRoot);
+
+	LeftController = CreateDefaultSubobject<UMotionControllerComponent>("LeftController");
+	LeftController->SetupAttachment(VRRoot);
+	LeftController->SetTrackingSource(EControllerHand::Left);
+
+	RightController = CreateDefaultSubobject<UMotionControllerComponent>("RightController");
+	RightController->SetupAttachment(VRRoot);
+	RightController->SetTrackingSource(EControllerHand::Right);
 
 	DestinationMarker = CreateDefaultSubobject<UStaticMeshComponent>("DestinationMarker");
 	DestinationMarker->SetupAttachment(GetRootComponent());
@@ -61,8 +70,10 @@ void AVRCharacter::Tick(float DeltaTime)
 
 bool AVRCharacter::DidFindTeleportDestination(FVector &OutLocation)
 {
-	FVector Start = Camera->GetComponentLocation();
-	FVector End = Start + Camera->GetForwardVector() * MaxTeleportDistance;
+	FVector Start = RightController->GetComponentLocation();
+	FVector Look = RightController->GetForwardVector();
+	Look = Look.RotateAngleAxis(30, RightController->GetRightVector());
+	FVector End = Start + Look * MaxTeleportDistance;
 
 	FHitResult HitResult;
 	bool DidHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
@@ -122,7 +133,16 @@ FVector2D AVRCharacter::GetBlinkerCenter()
 		return FVector2D(0.5, 0.5);
 	}
 
-	FVector WorldStationaryLocation = Camera->GetComponentLocation() + MovementDirection * 1000;
+	FVector WorldStationaryLocation;
+	if (FVector::DotProduct(Camera->GetForwardVector(), MovementDirection) > 0)
+	{
+		WorldStationaryLocation = Camera->GetComponentLocation() + MovementDirection * 1000;
+	}
+	else
+	{
+		WorldStationaryLocation = Camera->GetComponentLocation() - MovementDirection * 1000;
+	}
+
 	FVector2D ScreenStationaryLocation;
 	PlayerController->ProjectWorldLocationToScreen(WorldStationaryLocation, ScreenStationaryLocation);
 
