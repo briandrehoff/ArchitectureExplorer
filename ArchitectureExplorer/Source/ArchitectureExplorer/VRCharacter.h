@@ -49,9 +49,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere)
-	class UMotionControllerComponent* LeftController;
+	class AHandController* LeftController;
 	UPROPERTY(EditAnywhere)
-	class UMotionControllerComponent* RightController;
+	class AHandController* RightController;
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* VRRoot;
 	UPROPERTY(VisibleAnywhere)
@@ -65,7 +65,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
-private:
+private: // Configuration Parameters
 
 	UPROPERTY(EditAnywhere)
 	float TeleportProjectileRadius = 10;
@@ -85,5 +85,7 @@ private:
 	class UStaticMesh* TeleportArchMesh;
 	UPROPERTY(EditDefaultsOnly)
 	class UMaterialInterface* TeleportArchMaterial;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHandController> HandControllerClass;
 
 };
