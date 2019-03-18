@@ -28,9 +28,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	// Default sub object
+	// Callbacks
+	UFUNCTION()
+	void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	UFUNCTION()
+	void ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
+	// Helpers
+	bool IsOverlappingClimbableActor() const;
+
+private:
+	// Default sub object
 	UPROPERTY(VisibleAnywhere)
 	UMotionControllerComponent* MotionController;
 
+	// State
+	bool CanClimb = false;
 };

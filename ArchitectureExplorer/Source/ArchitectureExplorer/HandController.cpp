@@ -17,6 +17,8 @@ void AHandController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	OnActorBeginOverlap.AddDynamic(this, &AHandController::ActorBeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &AHandController::ActorEndOverlap);
 }
 
 // Called every frame
@@ -26,3 +28,29 @@ void AHandController::Tick(float DeltaTime)
 
 }
 
+void AHandController::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	bool NewCanClimb = IsOverlappingClimbableActor();
+	if (!CanClimb && NewCanClimb)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can Climb"));
+	}
+	CanClimb = NewCanClimb;
+}
+
+void AHandController::ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	CanClimb = IsOverlappingClimbableActor();
+}
+
+bool AHandController::IsOverlappingClimbableActor() const
+{
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors);
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		if (OverlappingActor->ActorHasTag("Climbable")) return true;
+	}
+
+	return false;
+}
