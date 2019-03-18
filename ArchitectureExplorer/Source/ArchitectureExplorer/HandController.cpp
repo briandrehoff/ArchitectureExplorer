@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HandController.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 AHandController::AHandController()
@@ -33,7 +35,15 @@ void AHandController::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherAc
 	bool NewCanClimb = IsOverlappingClimbableActor();
 	if (!CanClimb && NewCanClimb)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can Climb"));
+		APawn* Pawn = Cast<APawn>(GetAttachParentActor());
+		if (Pawn != nullptr)
+		{
+			APlayerController* Controller = Cast<APlayerController>(Pawn->GetController());
+			if (Controller != nullptr)
+			{
+				Controller->PlayHapticEffect(HapticEffect, MotionController->GetTrackingSource());
+			}
+		}
 	}
 	CanClimb = NewCanClimb;
 }
