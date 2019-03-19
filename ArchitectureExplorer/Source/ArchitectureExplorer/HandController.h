@@ -19,6 +19,9 @@ public:
 
 	void SetHand(EControllerHand Hand) { MotionController->SetTrackingSource(Hand); }
 
+	void Grip();
+	void Release();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,6 +39,7 @@ private:
 
 	// Helpers
 	bool IsOverlappingClimbableActor() const;
+	void MoveCharacterIfClimbing();
 
 private:
 	// Default sub object
@@ -48,4 +52,6 @@ private:
 
 	// State
 	bool CanClimb = false;
+	bool IsClimbing = false;
+	FVector ClimbingStartLocation;
 };

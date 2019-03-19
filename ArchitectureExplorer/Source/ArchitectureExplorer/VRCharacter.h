@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "HandController.h"
+
 #include "VRCharacter.generated.h"
 
 UCLASS()
@@ -39,6 +41,11 @@ private:
 	void UpdateSpline(const TArray<FVector> &Path);
 	FVector2D GetBlinkerCenter();
 
+	void GripLeft() { LeftController->Grip(); }
+	void ReleaseLeft() { LeftController->Release(); }
+	void GripRight() { RightController->Grip(); }
+	void ReleaseRight() { RightController->Release(); }
+
 	void BeginTeleport();
 	void FinishTeleport();
 
@@ -49,9 +56,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere)
-	class AHandController* LeftController;
+	AHandController* LeftController;
 	UPROPERTY(EditAnywhere)
-	class AHandController* RightController;
+	AHandController* RightController;
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* VRRoot;
 	UPROPERTY(VisibleAnywhere)
