@@ -148,9 +148,9 @@ void AVRCharacter::UpdateBlinkers()
 	float Speed = GetVelocity().Size();
 	float Radius = RadiusVsVelocity->GetFloatValue(Speed);
 
-	FVector2D Center = GetBlinkerCenter();
+	//FVector2D Center = GetBlinkerCenter();
 	BlinkerMaterialInstance->SetScalarParameterValue("Radius", Radius);
-	BlinkerMaterialInstance->SetVectorParameterValue("Center", FLinearColor(Center.X, Center.Y, 0));
+	//BlinkerMaterialInstance->SetVectorParameterValue("Center", FLinearColor(Center.X, Center.Y, 0));
 }
 
 void AVRCharacter::AddMeshToPool()
