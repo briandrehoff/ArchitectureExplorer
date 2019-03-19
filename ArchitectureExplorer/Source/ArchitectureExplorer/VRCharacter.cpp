@@ -64,6 +64,8 @@ void AVRCharacter::BeginPlay()
 		RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
 		RightController->SetHand(EControllerHand::Right);
 	}
+
+	LeftController->PairController(RightController);
 }
 
 // Called every frame

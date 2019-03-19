@@ -3,6 +3,8 @@
 #include "HandController.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AHandController::AHandController()
@@ -75,18 +77,40 @@ void AHandController::MoveCharacterIfClimbing()
 	GetAttachParentActor()->AddActorWorldOffset(-HandControllerDelta);
 }
 
+void AHandController::PairController(AHandController* Controller)
+{
+	OtherController = Controller;
+	OtherController->OtherController = this;
+}
+
 void AHandController::Grip()
 {
 	if (!CanClimb) return;
 
 	if (!IsClimbing)
 	{
+		OtherController->IsClimbing = false;
 		IsClimbing = true;
 		ClimbingStartLocation = GetActorLocation();
+
+		ACharacter* Character = Cast<ACharacter>(GetAttachParentActor());
+		if (Character != nullptr)
+		{
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		}
 	}
 }
 
 void AHandController::Release()
 {
-	IsClimbing = false;
+	if (IsClimbing)
+	{
+		IsClimbing = false;
+
+		ACharacter* Character = Cast<ACharacter>(GetAttachParentActor());
+		if (Character != nullptr)
+		{
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		}
+	}
 }
